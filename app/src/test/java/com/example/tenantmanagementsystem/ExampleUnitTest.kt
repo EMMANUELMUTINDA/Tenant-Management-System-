@@ -1,17 +1,14 @@
 package com.example.tenantmanagementsystem
 
-import com.example.tenantmanagementsystem.viewmodel.TenantViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
 class ExampleUnitTest {
 
-    private lateinit var viewModel: TenantViewModel
-
     @Before
     fun setUp() {
-        viewModel = TenantViewModel()
+        TenantRepository.tenants.clear()
     }
 
     @Test
@@ -29,17 +26,17 @@ class ExampleUnitTest {
 
     @Test
     fun testAddTenantIncreasesCount() {
-        val initialCount = viewModel.getTotalTenants()
-        viewModel.addTenant("Bob Smith", "0799887766", "12000")
-        val newCount = viewModel.getTotalTenants()
+        val initialCount = TenantRepository.tenants.size
+        TenantRepository.addTenant(Tenant(name = "Bob Smith", phone = "0799887766", rent = "12000"))
+        val newCount = TenantRepository.tenants.size
         assertEquals(initialCount + 1, newCount)
     }
 
     @Test
     fun testTotalRentCalculation() {
-        val tenantList = viewModel.tenants.value
-        val expectedTotal = tenantList.sumOf { it.rent.toDoubleOrNull() ?: 0.0 }
-        val formattedExpected = "KSh %.2f".format(expectedTotal)
-        assertEquals(formattedExpected, viewModel.getTotalRentCollected())
+        TenantRepository.addTenant(Tenant(name = "Alice", phone = "0711223344", rent = "15000"))
+        TenantRepository.addTenant(Tenant(name = "Bob", phone = "0722334455", rent = "25000"))
+        val expectedTotal = 40000.0
+        assertEquals(expectedTotal, TenantRepository.totalRent(), 0.001)
     }
 }
